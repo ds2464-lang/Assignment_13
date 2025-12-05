@@ -1,0 +1,45 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - heading "Calculations App" [level=1] [ref=e3]
+    - navigation [ref=e4]:
+      - link "Home" [ref=e5] [cursor=pointer]:
+        - /url: http://localhost:8000/
+      - link "Login" [ref=e6] [cursor=pointer]:
+        - /url: http://localhost:8000/login
+      - link "Register" [ref=e7] [cursor=pointer]:
+        - /url: http://localhost:8000/register
+  - main [ref=e8]:
+    - generic [ref=e14]:
+      - heading "Create Account" [level=2] [ref=e15]
+      - alert [ref=e16]: Unexpected token 'I', "Internal S"... is not valid JSON
+      - alert
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - text: Username
+          - textbox "Username" [ref=e19]: testuser_1764907746120
+        - generic [ref=e20]:
+          - text: Email
+          - textbox "Email" [ref=e21]: testuser_1764907746120@example.com
+        - generic [ref=e22]:
+          - text: First Name
+          - textbox "First Name" [ref=e23]: Test
+        - generic [ref=e24]:
+          - text: Last Name
+          - textbox "Last Name" [ref=e25]: User
+        - generic [ref=e26]:
+          - text: Password
+          - textbox "Password" [ref=e27]: SecurePass123!
+        - generic [ref=e28]:
+          - text: Confirm Password
+          - textbox "Confirm Password" [ref=e29]: SecurePass123!
+        - button "Register" [active] [ref=e31]
+      - paragraph [ref=e32]:
+        - text: Already have an account?
+        - link "Log in" [ref=e33] [cursor=pointer]:
+          - /url: /login
+  - contentinfo [ref=e34]:
+    - paragraph [ref=e35]: © 2025 Calculations App. All rights reserved.
+```
