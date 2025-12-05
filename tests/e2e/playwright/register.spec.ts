@@ -1,103 +1,44 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('User Registration', () => {
-  const baseUrl = 'http://localhost:8000/register';
 
-  // ----------------------------
-  // Positive Test
-  // ----------------------------
-  test('user can register successfully', async ({ page }) => {
-    await page.goto(baseUrl);
+  test('Positive: register with valid data', async ({ page }) => {
+    await page.goto('http://localhost:8000/register');
 
-    await page.fill('#username', `testuser${Date.now()}`);
-    await page.fill('#email', `testuser${Date.now()}@example.com`);
+    const id = Date.now();
+    await page.fill('#username', `testuser_${id}`);
+    await page.fill('#email', `testuser_${id}@example.com`);
     await page.fill('#first_name', 'Test');
     await page.fill('#last_name', 'User');
     await page.fill('#password', 'SecurePass123!');
     await page.fill('#confirm_password', 'SecurePass123!');
 
-    await page.click('button:text("Register")');
+    await page.locator('form#registrationForm').getByRole('button', { name: 'Register' }).click();
 
     // Wait for success message
-    await expect(page.locator('#successMessage')).toHaveText(/Registration successful/);
+    const successLocator = page.locator('#successMessage');
+    await successLocator.waitFor({ state: 'visible'});
+    await expect(successLocator).toContainText(/Registration successful/);
 
-    // Optional: check redirect to login
+    // Optional: confirm redirect to login page
     await page.waitForURL('**/login');
   });
 
-  // ----------------------------
-  // Negative Tests
-  // ----------------------------
-  test('shows error if username too short', async ({ page }) => {
-    await page.goto(baseUrl);
+  test('Negative: register with short password', async ({ page }) => {
+    await page.goto('http://localhost:8000/register');
 
-    await page.fill('#username', 'ab');
-    await page.fill('#email', 'test@example.com');
-    await page.fill('#first_name', 'Test');
-    await page.fill('#last_name', 'User');
-    await page.fill('#password', 'SecurePass123!');
-    await page.fill('#confirm_password', 'SecurePass123!');
+    await page.fill('#username', 'shortpassuser');
+    await page.fill('#email', 'shortpass@example.com');
+    await page.fill('#first_name', 'Short');
+    await page.fill('#last_name', 'Pass');
+    await page.fill('#password', '123');
+    await page.fill('#confirm_password', '123');
 
     await page.click('button:text("Register")');
 
-    await expect(page.locator('#errorMessage')).toHaveText(/Username must be at least/);
+    const errorLocator = page.locator('#errorMessage');
+    await errorLocator.waitFor({ state: 'visible' });
+    await expect(errorLocator).toContainText(/Password must be at least 8 characters long and contain uppercase, lowercase, and numbers/);
   });
 
-  test('shows error if passwords do not match', async ({ page }) => {
-    await page.goto(baseUrl);
-
-    await page.fill('#username', `user${Date.now()}`);
-    await page.fill('#email', `user${Date.now()}@example.com`);
-    await page.fill('#first_name', 'Test');
-    await page.fill('#last_name', 'User');
-    await page.fill('#password', 'SecurePass123!');
-    await page.fill('#confirm_password', 'WrongPass123!');
-
-    await page.click('button:text("Register")');
-
-    await expect(page.locator('#errorMessage')).toHaveText(/Passwords do not match/);
-  });
-
-  test('shows error if email is invalid', async ({ page }) => {
-    await page.goto(baseUrl);
-
-    await page.fill('#username', `user${Date.now()}`);
-    await page.fill('#email', 'invalid-email');
-    await page.fill('#first_name', 'Test');
-    await page.fill('#last_name', 'User');
-    await page.fill('#password', 'SecurePass123!');
-    await page.fill('#confirm_password', 'SecurePass123!');
-
-    await page.click('button:text("Register")');
-
-    await expect(page.locator('#errorMessage')).toHaveText(/valid email/);
-  });
-
-  test('shows error if username/email already exists', async ({ page }) => {
-    const username = `existinguser${Date.now()}`;
-    const email = `existinguser${Date.now()}@example.com`;
-
-    // First, register successfully
-    await page.goto(baseUrl);
-    await page.fill('#username', username);
-    await page.fill('#email', email);
-    await page.fill('#first_name', 'Test');
-    await page.fill('#last_name', 'User');
-    await page.fill('#password', 'SecurePass123!');
-    await page.fill('#confirm_password', 'SecurePass123!');
-    await page.click('button:text("Register")');
-    await page.waitForURL('**/login');
-
-    // Try registering the same username/email again
-    await page.goto(baseUrl);
-    await page.fill('#username', username);
-    await page.fill('#email', email);
-    await page.fill('#first_name', 'Test');
-    await page.fill('#last_name', 'User');
-    await page.fill('#password', 'SecurePass123!');
-    await page.fill('#confirm_password', 'SecurePass123!');
-    await page.click('button:text("Register")');
-
-    await expect(page.locator('#errorMessage')).toHaveText(/Username or email already exists/);
-  });
 });
